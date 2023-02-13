@@ -15,10 +15,15 @@ const refs = {
 refs.inputEl.addEventListener('input', debounce(changeHandler, DEBOUNCE_DELAY));
 
 function changeHandler(event) {
-  if (event.target.value.trim() !== '') {
-    fetchCountries(event.target.value.trim())
-      .then(data => {
-        if (data.length < 2) {
+    const value = event.target.value.trim();
+    cleanMarkup()
+
+    if (!value) {
+        return;
+      }
+
+    fetchCountries(value).then(data => {
+        if (data.length <= 1) {
           countryInfoMarkup(data);
         } else if (data.length <= 10) {
           countriesListMarkup(data);
@@ -31,9 +36,6 @@ function changeHandler(event) {
       .catch(error => {
         Notiflix.Notify.failure('Oops, there is no country with that name');
       });
-  } else {
-    clearAll(refs.countryInfoEl, refs.countryListEl);
-  }
 }
 
 function countriesListMarkup(data) {
@@ -46,8 +48,7 @@ function countriesListMarkup(data) {
     })
     .join('');
   refs.countryListEl.innerHTML = markup;
-  
-  clearAll(refs.countryInfoEl);
+
 }
 
 function countryInfoMarkup(data) {
@@ -62,12 +63,12 @@ function countryInfoMarkup(data) {
     <p><strong>Population:</strong> ${data[0].population}</p>
     <p><strong>Languages:</strong> ${languagesArr}</p>`;
   refs.countryInfoEl.innerHTML = markup;
-  clearAll(refs.countryListEl);
+
 }
 
-function clearAll(firstName, secondName) {
-  firstName.innerHTML = '';
-  if (secondName) {
-    secondName.innerHTML = '';
+function cleanMarkup() {
+    refs.countryListEl.innerHTML = '';
+    refs.countryInfoEl.innerHTML = '';
   }
-}
+
+
